@@ -12,10 +12,9 @@ are exported from the Tacx Cycling App, but since my HeartRate monitor only conn
 a need to merge that data into the file from the Tacx Cycling App.
 
 ## Usage
-'''python
+```python
 tcx_tacx = ParseTcx('my_file.txt')
 tcx_tacx.parse()
 tcx_tacx.get_info()
-'''
-
+```
 
