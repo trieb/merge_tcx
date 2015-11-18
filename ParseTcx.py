@@ -1,4 +1,5 @@
 import timeit
+from time import strptime, strftime
 from collections import namedtuple
 try:
     import xml.etree.cElementTree as xml
@@ -8,7 +9,18 @@ except:
 
 ns = {'role': 'http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2'}
 
+Namespaces = {
+        None: "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2",
+        "ns2": "http://www.garmin.com/xmlschemas/UserProfile/v2",
+        "tpx": "http://www.garmin.com/xmlschemas/ActivityExtension/v2",
+        "ns4": "http://www.garmin.com/xmlschemas/ProfileExtension/v1",
+        "ns5": "http://www.garmin.com/xmlschemas/ActivityGoals/v1",
+        "xsi": "http://www.w3.org/2001/XMLSchema-instance"
+    }
+
+
 TrackPoint = namedtuple('TrackPoint', 'Time HeartRateBpm AltitudeMeters DistanceMeters Cadence')
+
 
 class ParseTcx:
     def __init__(self, file):
@@ -24,11 +36,12 @@ class ParseTcx:
         self.Intensity        = None
         self.Cadence          = None
         self.TriggerMethod    = None
-        self.TrackPoints      = []
+        self.TrackPoints      = dict()
 
     def parse(self):
-        tree = xml.parse(self.file)
-        self.root = tree.getroot()
+        xml.register_namespace('', 'http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2')
+        self.tree = xml.parse(self.file)
+        self.root = self.tree.getroot()
         self.parse_root(self.root)
 
     def get_info(self):
@@ -71,6 +84,7 @@ class ParseTcx:
         self.get_lap_info(lap)
         for child in lap:
             if child.tag == self.get_role('Track'):
+                self.dom_trackpoints = child.findall('role:Trackpoint', ns)
                 for point in child.findall('role:Trackpoint', ns):
                     Time           = self.get_text(point, 'Time')
                     hr = point.find('role:HeartRateBpm', ns)
@@ -79,7 +93,9 @@ class ParseTcx:
                     DistanceMeters = self.get_text(point, 'DistanceMeters')
                     Cadence        = self.get_text(point, 'Cadence')
                     trackpoint = TrackPoint(Time, HeartRateBpm, AltitudeMeters, DistanceMeters, Cadence)
-                    self.TrackPoints.append(trackpoint)
+                    #self.TrackPoints.append(trackpoint)
+                    timeKey = Time[0:19]
+                    self.TrackPoints[timeKey] = trackpoint
 
     def get_lap_info(self, lap):
         self.StartTime = lap.attrib['StartTime']
