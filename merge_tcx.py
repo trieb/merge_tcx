@@ -13,3 +13,4 @@ tcx_920XT = ParseTcx(G920XT_tcx_file)
 tcx_920XT.parse()
 tcx_920XT.get_info()
 
+
