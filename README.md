@@ -18,3 +18,5 @@ tcx_tacx.parse()
 tcx_tacx.get_info()
 ```
 
+# Upload to Strava
+Goto: https://www.strava.com/login to upoad the merged file.

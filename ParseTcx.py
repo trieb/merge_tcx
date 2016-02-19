@@ -5,7 +5,7 @@ try:
     import xml.etree.cElementTree as xml
 except:
     import xml.etree.cElementTree as xml
-
+import matplotlib.pyplot as plt
 
 ns = {'role': 'http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2'}
 
@@ -24,7 +24,7 @@ TrackPoint = namedtuple('TrackPoint', 'Time HeartRateBpm AltitudeMeters Distance
 
 class ParseTcx:
     def __init__(self, file):
-        self.file = file;
+        self.file = file
         self.root             = None
         self.Sport            = None
         self.StartTime        = None
@@ -107,6 +107,19 @@ class ParseTcx:
         self.Intensity        = self.get_text(lap, 'Intensity')
         self.Cadence          = self.get_text(lap, 'Cadence')
         self.TriggerMethod    = self.get_text(lap, 'TriggerMethod')
+
+    def plot_signal(self, signal):
+        signal_values = []
+        time_values = []
+        if signal == 'HeartRateBpm':
+            for tp_key in sorted(list(self.TrackPoints.keys())):
+                signal_values.append(self.TrackPoints[tp_key].HeartRateBpm)
+                #time_values.append(self.TrackPoints[tp_key].Time)
+        plt.plot(signal_values)
+        plt.ylabel('Heartbeat')
+        plt.show()
+
+
 
 
 if __name__ == "__main__":
